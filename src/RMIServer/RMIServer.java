@@ -59,28 +59,28 @@ public class RMIServer extends UnicastRemoteObject implements RMI {
         //loadBinaryFile();
         try {
             connections.put("Server", (1101));
-            connections.put("Machine1", (1102));
-            connections.put("Machine2", (1103));
-            connections.put("Machine3", (1104));
+            connections.put("DataServer1", (1102));
+            connections.put("DataServer2", (1103));
+            connections.put("DataServer3", (1104));
 
             Registry reg = LocateRegistry.createRegistry(connections.get("Server"));
             reg.rebind("server", new RMIServer());
             System.out.println("Server started..");
             loadBinaryFile();
 
-            Registry reg1 = LocateRegistry.getRegistry("127.0.0.1", connections.get("Machine1"));
-            rmi1 = (DSRMI) reg1.lookup("Machine1");
-            System.out.println("Connected to Machine1");
+            Registry reg1 = LocateRegistry.getRegistry("127.0.0.1", connections.get("DataServer1"));
+            rmi1 = (DSRMI) reg1.lookup("DataServer1");
+            System.out.println("Connected to DataServer1");
             //rmi1.printInServerSide("Popeye, Why you do this?");
 
-            Registry reg2 = LocateRegistry.getRegistry("127.0.0.1", connections.get("Machine2"));
-            rmi2 = (DSRMI) reg2.lookup("Machine2");
-            System.out.println("Connected to Machine2");
+            Registry reg2 = LocateRegistry.getRegistry("127.0.0.1", connections.get("DataServer2"));
+            rmi2 = (DSRMI) reg2.lookup("DataServer2");
+            System.out.println("Connected to DataServer2");
             //rmi2.printInServerSide("Popeye, Why you do this? Again?");
 
-            Registry reg3 = LocateRegistry.getRegistry("127.0.0.1", connections.get("Machine3"));
-            rmi3 = (DSRMI) reg3.lookup("Machine3");
-            System.out.println("Connected to Machine3");
+            Registry reg3 = LocateRegistry.getRegistry("127.0.0.1", connections.get("DataServer3"));
+            rmi3 = (DSRMI) reg3.lookup("DataServer3");
+            System.out.println("Connected to DataServer3");
             //rmi3.printInServerSide("Popeye, Why you do this? Over and Over Again?");
 
         } catch (Exception e) {
@@ -196,7 +196,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI {
 
     }
 
-    private void nextMachine() {
+    private void nextDataServer() {
         if (roundRobin == 3) {
             roundRobin = 1;
         } else {
@@ -249,7 +249,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI {
                 System.out.println("No se pudo crear el archivo");
             }
         }
-        nextMachine();
+        nextDataServer();
         return true;
     }
 

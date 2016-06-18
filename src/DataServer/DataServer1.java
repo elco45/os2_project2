@@ -21,15 +21,15 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+public class DataServer1 extends UnicastRemoteObject implements DSRMI {
 
-public class Machine2 extends UnicastRemoteObject implements DSRMI{
     private static File dataDirectory;
-    private static ArrayList<Integer> clients = new ArrayList();;
+    private static ArrayList<Integer> clients = new ArrayList();
     private static Registry reg;
-    
-    public Machine2(File dataDirectory2) throws RemoteException {
+
+    public DataServer1(File dataDirectory2) throws RemoteException {
         super();
-        dataDirectory= dataDirectory2;
+        dataDirectory = dataDirectory2;
     }
 
     public File getDataDirectory() {
@@ -44,37 +44,35 @@ public class Machine2 extends UnicastRemoteObject implements DSRMI{
         return clients;
     }
 
-    
-    public boolean addCredential(Integer c){
+    public boolean addCredential(Integer c) {
         return clients.add(c);
     }
-    
+
     @Override
     public void printInServerSide(String msg) throws RemoteException {
         System.out.println(msg);
     }
-    
+
     public static void main(String args[]) {
-        //loadBinaryFile();
         try {
-            dataDirectory = new File("./Data/Machine2/DFS");
+            dataDirectory = new File("./Machine1");
             if (!dataDirectory.exists()) {
                 try {
                     System.out.println("No Existe");
                     if (dataDirectory.mkdirs()) {
                         System.out.println("Success");
-                    }else{
+                    } else {
                         System.err.println("Fail");
                     }
                 } catch (SecurityException se) {
                     System.err.println(se);
                 }
-            }else{
+            } else {
                 System.out.println("Existe!");
             }
-            reg = LocateRegistry.createRegistry(1103);
-            reg.rebind("Machine2", new Machine2(dataDirectory));
-            System.out.println("Machine2 started..");
+            reg = LocateRegistry.createRegistry(1102);
+            reg.rebind("Machine1", new DataServer1(dataDirectory));
+            System.out.println("Machine1 started..");
         } catch (Exception e) {
             System.out.println(e);
         }
@@ -90,6 +88,7 @@ public class Machine2 extends UnicastRemoteObject implements DSRMI{
         System.err.println("No se encontro el archivo");
         return null;
     }
+
     @Override
     public boolean createFile(String content, String name) throws RemoteException {
         PrintWriter writer = null;
@@ -98,16 +97,17 @@ public class Machine2 extends UnicastRemoteObject implements DSRMI{
         try {
             writer = new PrintWriter(name, "UTF-8");
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(Machine1.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DataServer1.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(Machine1.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DataServer1.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
         writer.println(content);
         writer.close();
         return true;
     }
+
     @Override
     public boolean deleteFile(String name) throws RemoteException {
         name = dataDirectory.getAbsolutePath()+"\\"+name;
@@ -117,7 +117,7 @@ public class Machine2 extends UnicastRemoteObject implements DSRMI{
     
     @Override
     public String getFileContent(String name)throws RemoteException{
-         String collectedInfo = "";
+        String collectedInfo = "";
             try {
                 String line = "";
                 name = dataDirectory.getAbsolutePath()+"\\"+name;
@@ -132,5 +132,4 @@ public class Machine2 extends UnicastRemoteObject implements DSRMI{
             }
             return collectedInfo;
     }
-    
 }

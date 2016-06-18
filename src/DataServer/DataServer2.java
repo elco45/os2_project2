@@ -22,15 +22,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
-public class Machine3 extends UnicastRemoteObject implements DSRMI {
-
+public class DataServer2 extends UnicastRemoteObject implements DSRMI{
     private static File dataDirectory;
-    private static ArrayList<Integer> clients;
+    private static ArrayList<Integer> clients = new ArrayList();;
     private static Registry reg;
-
-    public Machine3(File dataDirectory2) throws RemoteException {
+    
+    public DataServer2(File dataDirectory2) throws RemoteException {
         super();
-        dataDirectory = dataDirectory2;
+        dataDirectory= dataDirectory2;
     }
 
     public File getDataDirectory() {
@@ -45,19 +44,20 @@ public class Machine3 extends UnicastRemoteObject implements DSRMI {
         return clients;
     }
 
-    public boolean addCredential(Integer c) {
+    
+    public boolean addCredential(Integer c){
         return clients.add(c);
     }
-
+    
     @Override
     public void printInServerSide(String msg) throws RemoteException {
         System.out.println(msg);
     }
-
+    
     public static void main(String args[]) {
         //loadBinaryFile();
         try {
-            dataDirectory = new File("./Data/Machine3/DFS");
+            dataDirectory = new File("./Data/Machine2/DFS");
             if (!dataDirectory.exists()) {
                 try {
                     System.out.println("No Existe");
@@ -72,9 +72,9 @@ public class Machine3 extends UnicastRemoteObject implements DSRMI {
             }else{
                 System.out.println("Existe!");
             }
-            reg = LocateRegistry.createRegistry(1104);
-            reg.rebind("Machine3", new Machine3(dataDirectory));
-            System.out.println("Machine3 started..");
+            reg = LocateRegistry.createRegistry(1103);
+            reg.rebind("Machine2", new DataServer2(dataDirectory));
+            System.out.println("Machine2 started..");
         } catch (Exception e) {
             System.out.println(e);
         }
@@ -98,10 +98,10 @@ public class Machine3 extends UnicastRemoteObject implements DSRMI {
         try {
             writer = new PrintWriter(name, "UTF-8");
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(Machine1.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DataServer1.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(Machine1.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DataServer1.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
         writer.println(content);
@@ -132,4 +132,5 @@ public class Machine3 extends UnicastRemoteObject implements DSRMI {
             }
             return collectedInfo;
     }
+    
 }
