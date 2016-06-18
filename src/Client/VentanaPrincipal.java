@@ -77,8 +77,10 @@ public class VentanaPrincipal extends JFrame {
                                 menu.add(MenuItemFile);
                                 JMenuItem MenuItemDirectory = new JMenuItem("Crear Directorio");
                                 menu.add(MenuItemDirectory);
-                                menu.show(Tree, pathBounds.x, pathBounds.y + pathBounds.height);
+                                JMenuItem menuItemDirectoryBorrar = new JMenuItem("Borrar Directorio");
+                                menu.add(menuItemDirectoryBorrar);
 
+                                menu.show(Tree, pathBounds.x, pathBounds.y + pathBounds.height);
                                 MenuItemFile.addActionListener(
                                         new ActionListener() {
                                     @Override
@@ -103,6 +105,33 @@ public class VentanaPrincipal extends JFrame {
                                         }
                                     }
                                 });
+
+                                //borrar dirrectorio 
+                                menuItemDirectoryBorrar.addActionListener(
+                                        new ActionListener() {
+                                    @Override
+                                    public void actionPerformed(ActionEvent Event) {
+                                        System.out.println("Borrar Dir");
+                                        DefaultTreeModel model = (DefaultTreeModel) Tree.getModel();
+                                        TreePath tpo = Tree.getSelectionPath();
+                                        System.out.println(tpo);
+
+                                        try {
+                                            if (serverConn.deletedir(tpo)) {
+                                                // Tree.setModel(serverConn.getTreeModel());
+                                                // ((DefaultTreeModel) Tree.getModel()).reload();
+                                                System.out.println("se borro");
+                                            } else {
+
+                                                System.out.println("No se pudo");
+                                            }
+                                        } catch (RemoteException ex) {
+                                            Logger.getLogger(VentanaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+                                        }
+
+                                    }
+                                }
+                                );
 
                                 MenuItemDirectory.addActionListener(
                                         new ActionListener() {
@@ -138,6 +167,7 @@ public class VentanaPrincipal extends JFrame {
                             } else {
                                 JMenuItem MenuItemDelete = new JMenuItem("Borrar Archivo");
                                 menu.add(MenuItemDelete);
+
                                 menu.show(Tree, pathBounds.x, pathBounds.y + pathBounds.height);
 
                                 DefaultTreeModel modelo = (DefaultTreeModel) Tree.getModel();

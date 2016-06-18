@@ -20,4 +20,6 @@ public interface DSRMI extends Remote {
     public boolean createFile(String content, String name) throws RemoteException;
 
     public boolean deleteFile(String name) throws RemoteException;
+
+    public boolean deleteDir(String name) throws RemoteException;
 }

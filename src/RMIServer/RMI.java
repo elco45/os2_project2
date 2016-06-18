@@ -6,6 +6,7 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
 
 public interface RMI extends Remote {
 
@@ -26,4 +27,6 @@ public interface RMI extends Remote {
     public boolean deleteFile(DefaultMutableTreeNode nodo) throws RemoteException;
 
     public void addDataServer(String IP, int Port, String Name) throws RemoteException, NotBoundException;
+
+    public boolean deletedir(TreePath treepath) throws RemoteException;
 }

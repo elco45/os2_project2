@@ -129,4 +129,9 @@ public class DataServer3 extends UnicastRemoteObject implements DSRMI {
         }
         return collectedInfo;
     }
+
+    @Override
+    public boolean deleteDir(String name) throws RemoteException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

@@ -19,6 +19,7 @@ import java.util.LinkedList;
 import java.util.List;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreePath;
 
 public class RMIServer extends UnicastRemoteObject implements RMI {
 
@@ -54,10 +55,9 @@ public class RMIServer extends UnicastRemoteObject implements RMI {
         try {
 
             connections.put("Server", (1101));
-
             connections.put("DataServer1", (1102));
             connections.put("DataServer2", (1103));
-            //connections.put("DataServer3", (1104));
+            // connections.put("DataServer3", (1104));
 
             Registry reg = LocateRegistry.createRegistry(connections.get("Server"));
             reg.rebind("server", new RMIServer());
@@ -272,5 +272,10 @@ public class RMIServer extends UnicastRemoteObject implements RMI {
         Registry reg1 = LocateRegistry.getRegistry(IP, Port);
         listDataServer.add((DSRMI) reg1.lookup(Name));
         System.out.println("Connected to " + Name);
+    }
+
+    @Override
+    public boolean deletedir(TreePath treepath) throws RemoteException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
