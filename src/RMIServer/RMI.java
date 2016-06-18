@@ -25,5 +25,5 @@ public interface RMI extends Remote {
 
     public boolean deleteFile(DefaultMutableTreeNode nodo) throws RemoteException;
 
-    public void addDataServer(String IP,int Port,String Name) throws RemoteException, NotBoundException;
+    public void addDataServer(String IP, int Port, String Name) throws RemoteException, NotBoundException;
 }

@@ -1,12 +1,10 @@
 package RMIServer;
 
 import Client.entryNode;
-import java.io.BufferedReader;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -15,13 +13,10 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -90,21 +85,18 @@ public class RMIServer extends UnicastRemoteObject implements RMI {
                 //If file exists, it reads the file and cast
                 //that file in order to load it in archiveStructure
                 FileInputStream entry = new FileInputStream(file);
-                ObjectInputStream object = new ObjectInputStream(entry);
-                try {
+                try (ObjectInputStream object = new ObjectInputStream(entry)) {
                     archiveStructure = (DefaultTreeModel) object.readObject();
                     System.out.println("Lo lei");
                 } catch (EOFException ex) {
 
                 } finally {
-                    //Always close the FileInputStream and the ObjectInputStream
+//Always close the FileInputStream and the ObjectInputStream
                     //to avoid errors
-                    object.close();
                     entry.close();
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException | ClassNotFoundException e) {
         }
     }
 
@@ -115,15 +107,14 @@ public class RMIServer extends UnicastRemoteObject implements RMI {
             //this method should be executed before the program
             //finishes its execution
             file = new File("./archiveStructure.bin");
-            FileOutputStream exit = new FileOutputStream(file);
-            ObjectOutputStream object = new ObjectOutputStream(exit);
-            object.writeObject(archiveStructure);
-            object.flush();
-            object.close();
-            exit.close();
+            try (FileOutputStream exit = new FileOutputStream(file)) {
+                ObjectOutputStream object = new ObjectOutputStream(exit);
+                object.writeObject(archiveStructure);
+                object.flush();
+                object.close();
+            }
 
         } catch (Exception ext) {
-            ext.printStackTrace();
         }
     }
 
@@ -277,7 +268,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI {
     }
 
     @Override
-    public void addDataServer(String IP,int Port,String Name) throws RemoteException, NotBoundException {
+    public void addDataServer(String IP, int Port, String Name) throws RemoteException, NotBoundException {
         Registry reg1 = LocateRegistry.getRegistry(IP, Port);
         listDataServer.add((DSRMI) reg1.lookup(Name));
         System.out.println("Connected to " + Name);

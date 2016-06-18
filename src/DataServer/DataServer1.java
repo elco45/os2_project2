@@ -15,6 +15,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -57,7 +58,7 @@ public class DataServer1 extends UnicastRemoteObject implements DSRMI {
 
     public static void main(String args[]) {
         try {
-            dataDirectory = new File("./Data/Machine2");
+            dataDirectory = new File("./Data/DataServer1/DFS");
             if (!dataDirectory.exists()) {
                 try {
                     System.out.println("No Existe");
@@ -75,13 +76,13 @@ public class DataServer1 extends UnicastRemoteObject implements DSRMI {
             Registry reg1 = LocateRegistry.getRegistry("127.0.0.1", 1101);
             RMI server = (RMI) reg1.lookup("server");
             System.out.println("Found Server");
-            
+
             reg = LocateRegistry.createRegistry(1102);
-            reg.rebind("Machine1", new DataServer1(dataDirectory));
-            System.out.println("Machine1 started..");
-        
-            server.addDataServer("127.0.0.1", 1102, "Machine1");
-        } catch (Exception e) {
+            reg.rebind("DataServer1", new DataServer1(dataDirectory));
+            System.out.println("DataServer1 started..");
+
+            server.addDataServer("127.0.0.1", 1102, "DataServer1");
+        } catch (RemoteException | NotBoundException e) {
             System.out.println(e);
         }
     }
@@ -100,14 +101,11 @@ public class DataServer1 extends UnicastRemoteObject implements DSRMI {
     @Override
     public boolean createFile(String content, String name) throws RemoteException {
         PrintWriter writer = null;
-        name = dataDirectory.getAbsolutePath()+"\\"+name;
-        System.out.println("Nombre del Archivo: "+name);
+        name = dataDirectory.getAbsolutePath() + "\\" + name;
+        System.out.println("Nombre del Archivo: " + name);
         try {
             writer = new PrintWriter(name, "UTF-8");
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(DataServer1.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
-        } catch (UnsupportedEncodingException ex) {
+        } catch (FileNotFoundException | UnsupportedEncodingException ex) {
             Logger.getLogger(DataServer1.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
@@ -118,26 +116,25 @@ public class DataServer1 extends UnicastRemoteObject implements DSRMI {
 
     @Override
     public boolean deleteFile(String name) throws RemoteException {
-        name = dataDirectory.getAbsolutePath()+"\\"+name;
+        name = dataDirectory.getAbsolutePath() + "\\" + name;
         File file = new File(name);
         return file.delete();
     }
-    
+
     @Override
-    public String getFileContent(String name)throws RemoteException{
+    public String getFileContent(String name) throws RemoteException {
         String collectedInfo = "";
-            try {
-                String line = "";
-                name = dataDirectory.getAbsolutePath()+"\\"+name;
-                FileReader f = new FileReader(name);
-                BufferedReader b = new BufferedReader(f);
+        try {
+            String line = "";
+            name = dataDirectory.getAbsolutePath() + "\\" + name;
+            FileReader f = new FileReader(name);
+            try (BufferedReader b = new BufferedReader(f)) {
                 while ((line = b.readLine()) != null) {
                     collectedInfo += line;
                 }
-                b.close();
-            } catch (IOException ex) {
-                ex.printStackTrace();
             }
-            return collectedInfo;
+        } catch (IOException ex) {
+        }
+        return collectedInfo;
     }
 }

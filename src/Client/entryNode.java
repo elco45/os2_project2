@@ -1,26 +1,22 @@
 package Client;
 
-
-
-
-
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 import java.io.Serializable;
 
-public class entryNode implements Serializable{
+public class entryNode implements Serializable {
+
     private String name;
     private entryNode father;
     private int DataNode;
     private boolean isDir;
-    
+
     //Constructor para el root
     public entryNode() {
-        this.name="/ROOT/DFS/";
+        this.name = "/ROOT/DFS/";
         this.father = null;
         this.DataNode = -1;
         this.isDir = true;
@@ -32,7 +28,7 @@ public class entryNode implements Serializable{
         this.DataNode = DataNode;
         this.isDir = isDir;
     }
-    
+
     public String getName() {
         return name;
     }
@@ -69,7 +65,5 @@ public class entryNode implements Serializable{
     public String toString() {
         return name;
     }
-    
-    
-    
+
 }

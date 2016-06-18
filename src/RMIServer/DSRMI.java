@@ -10,10 +10,14 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 public interface DSRMI extends Remote {
-    
-    public void printInServerSide(String msg)throws RemoteException;
-    public File getFile(String name)throws RemoteException;
-    public String getFileContent(String name)throws RemoteException;
+
+    public void printInServerSide(String msg) throws RemoteException;
+
+    public File getFile(String name) throws RemoteException;
+
+    public String getFileContent(String name) throws RemoteException;
+
     public boolean createFile(String content, String name) throws RemoteException;
+
     public boolean deleteFile(String name) throws RemoteException;
 }

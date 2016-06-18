@@ -6,16 +6,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.rmi.AccessException;
-import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
-import javax.swing.event.PopupMenuEvent;
-import javax.swing.event.PopupMenuListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
@@ -43,6 +39,7 @@ public class VentanaPrincipal extends JFrame {
         Tree.setCellRenderer(newRender);
 
         Tree.addMouseListener(new MouseAdapter() {
+            @Override
             public void mousePressed(MouseEvent e) {
                 if (SwingUtilities.isLeftMouseButton(e)) {
                     if (e.getClickCount() == 2) {
@@ -84,58 +81,60 @@ public class VentanaPrincipal extends JFrame {
 
                                 MenuItemFile.addActionListener(
                                         new ActionListener() {
-                                            public void actionPerformed(ActionEvent Event) {
-                                                try {
-                                                    String Text = TextArea.getText();
-                                                    DefaultTreeModel model = (DefaultTreeModel) Tree.getModel();
-                                                    TreePath tp = Tree.getSelectionPath();
-                                                    String archivo = JOptionPane.showInputDialog("Ingrese el nombre del archivo");
+                                    @Override
+                                    public void actionPerformed(ActionEvent Event) {
+                                        try {
+                                            String Text = TextArea.getText();
+                                            DefaultTreeModel model = (DefaultTreeModel) Tree.getModel();
+                                            TreePath tp = Tree.getSelectionPath();
+                                            String archivo = JOptionPane.showInputDialog("Ingrese el nombre del archivo");
 
-                                                    DefaultMutableTreeNode parent = (DefaultMutableTreeNode) tp.getLastPathComponent();
+                                            DefaultMutableTreeNode parent = (DefaultMutableTreeNode) tp.getLastPathComponent();
 
-                                                    if (serverConn.addFile(archivo, parent, Text)) {
-                                                        Tree.setModel(serverConn.getTreeModel());
-                                                        ((DefaultTreeModel) Tree.getModel()).reload();
-                                                    } else {
+                                            if (serverConn.addFile(archivo, parent, Text)) {
+                                                Tree.setModel(serverConn.getTreeModel());
+                                                ((DefaultTreeModel) Tree.getModel()).reload();
+                                            } else {
 
-                                                        System.out.println("No se pudo");
-                                                    }
-                                                } catch (RemoteException ex) {
-                                                    Logger.getLogger(VentanaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
-                                                }
+                                                System.out.println("No se pudo");
                                             }
-                                        });
+                                        } catch (RemoteException ex) {
+                                            Logger.getLogger(VentanaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+                                        }
+                                    }
+                                });
 
                                 MenuItemDirectory.addActionListener(
                                         new ActionListener() {
-                                            public void actionPerformed(ActionEvent Event) {
-                                                try {
-                                                    System.out.println("Directorio");
-                                                    DefaultTreeModel model = (DefaultTreeModel) Tree.getModel();
-                                                    TreePath tp = Tree.getSelectionPath();
-                                                    String Dir = JOptionPane.showInputDialog("Ingrese el nombre del Directorio");
-                                                    /*
+                                    @Override
+                                    public void actionPerformed(ActionEvent Event) {
+                                        try {
+                                            System.out.println("Directorio");
+                                            DefaultTreeModel model = (DefaultTreeModel) Tree.getModel();
+                                            TreePath tp = Tree.getSelectionPath();
+                                            String Dir = JOptionPane.showInputDialog("Ingrese el nombre del Directorio");
+                                            /*
                                                      model.insertNodeInto(new DefaultMutableTreeNode(hijo), Parent, 0)
                                                      model.insertNodeInto(new DefaultMutableTreeNode(Dir), (DefaultMutableTreeNode) tp.getLastPathComponent(), 0);
                                                      model.reload();
-                                                     */
+                                             */
 
-                                                    DefaultMutableTreeNode parent = (DefaultMutableTreeNode) tp.getLastPathComponent();
+                                            DefaultMutableTreeNode parent = (DefaultMutableTreeNode) tp.getLastPathComponent();
 
-                                                    if (serverConn.addDirectory(parent, Dir)) {
-                                                        Tree.setModel(serverConn.getTreeModel());
-                                                        ((DefaultTreeModel) Tree.getModel()).reload();
-                                                    } else {
+                                            if (serverConn.addDirectory(parent, Dir)) {
+                                                Tree.setModel(serverConn.getTreeModel());
+                                                ((DefaultTreeModel) Tree.getModel()).reload();
+                                            } else {
 
-                                                        System.out.println("No se pudo");
-                                                    }
-
-                                                    //addDirectory(insertNode, "texto");
-                                                } catch (Exception ex) {
-                                                    Logger.getLogger(VentanaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
-                                                }
+                                                System.out.println("No se pudo");
                                             }
-                                        });
+
+                                            //addDirectory(insertNode, "texto");
+                                        } catch (Exception ex) {
+                                            Logger.getLogger(VentanaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+                                        }
+                                    }
+                                });
                             } else {
                                 JMenuItem MenuItemDelete = new JMenuItem("Borrar Archivo");
                                 menu.add(MenuItemDelete);
@@ -147,21 +146,22 @@ public class VentanaPrincipal extends JFrame {
 
                                 MenuItemDelete.addActionListener(
                                         new ActionListener() {
-                                            public void actionPerformed(ActionEvent Event) {
+                                    @Override
+                                    public void actionPerformed(ActionEvent Event) {
 
-                                                try {
-                                                    if (serverConn.deleteFile(parento)) {
-                                                        Tree.setModel(serverConn.getTreeModel());
-                                                        ((DefaultTreeModel) Tree.getModel()).reload();
-                                                    } else {
-                                                        JOptionPane.showMessageDialog(null, "No se puede acceder en estos momentos al servidor");
-                                                    }
-                                                } catch (RemoteException ex) {
-                                                    Logger.getLogger(VentanaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
-                                                }
-
+                                        try {
+                                            if (serverConn.deleteFile(parento)) {
+                                                Tree.setModel(serverConn.getTreeModel());
+                                                ((DefaultTreeModel) Tree.getModel()).reload();
+                                            } else {
+                                                JOptionPane.showMessageDialog(null, "No se puede acceder en estos momentos al servidor");
                                             }
-                                        });
+                                        } catch (RemoteException ex) {
+                                            Logger.getLogger(VentanaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+                                        }
+
+                                    }
+                                });
                             }
                         }
                     } catch (Exception ex) {
