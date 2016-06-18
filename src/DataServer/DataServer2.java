@@ -6,6 +6,8 @@
 package DataServer;
 
 import RMIServer.DSRMI;
+import RMIServer.RMI;
+import RMIServer.RMIServer;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -57,7 +59,7 @@ public class DataServer2 extends UnicastRemoteObject implements DSRMI{
     public static void main(String args[]) {
         //loadBinaryFile();
         try {
-            dataDirectory = new File("./Data/Machine2/DFS");
+            dataDirectory = new File("./Data/Machine2");
             if (!dataDirectory.exists()) {
                 try {
                     System.out.println("No Existe");
@@ -72,9 +74,16 @@ public class DataServer2 extends UnicastRemoteObject implements DSRMI{
             }else{
                 System.out.println("Existe!");
             }
+            
+            Registry reg1 = LocateRegistry.getRegistry("127.0.0.1", 1101);
+            RMI server = (RMI) reg1.lookup("server");
+            System.out.println("Found Server");
+            
             reg = LocateRegistry.createRegistry(1103);
-            reg.rebind("Machine2", new DataServer2(dataDirectory));
+            reg.rebind("Machine2", new DataServer1(dataDirectory));
             System.out.println("Machine2 started..");
+        
+            server.addDataServer("127.0.0.1", 1103, "Machine2");
         } catch (Exception e) {
             System.out.println(e);
         }
