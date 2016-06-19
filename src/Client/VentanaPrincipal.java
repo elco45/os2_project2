@@ -223,7 +223,6 @@ public class VentanaPrincipal extends JFrame {
             Logger.getLogger(VentanaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
-
     }
 
     private void addDirectory(DefaultMutableTreeNode Father, String Name) {

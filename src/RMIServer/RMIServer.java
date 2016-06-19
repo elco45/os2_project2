@@ -46,6 +46,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI {
     }
 
     static DefaultTreeModel archiveStructure = null;
+    private static int dataServerConnected = 0;
     static int roundRobin = 1;
     public static List<DSRMI> listDataServer = new LinkedList<>();
 
@@ -174,7 +175,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI {
     }
 
     private void nextDataServer() {
-        if (roundRobin == 2) {
+        if (roundRobin == dataServerConnected) {
             roundRobin = 1;
         } else {
             roundRobin++;
@@ -228,7 +229,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI {
             nodo = nodo.getFather();
         }
 
-        return path.replace('/', '#');
+        return path;
     }
 
     @Override
@@ -262,9 +263,8 @@ public class RMIServer extends UnicastRemoteObject implements RMI {
         String name = getPath(node);
         System.out.println(node.getDataNode());
         String retrievedFile = "";
-
+        
         retrievedFile = listDataServer.get(node.getDataNode() - 1).getFileContent(name);
-
         return retrievedFile;
     }
 
@@ -273,6 +273,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI {
         Registry reg1 = LocateRegistry.getRegistry(IP, Port);
         listDataServer.add((DSRMI) reg1.lookup(Name));
         System.out.println("Connected to " + Name);
+        dataServerConnected++;
     }
 
     @Override
@@ -298,6 +299,6 @@ public class RMIServer extends UnicastRemoteObject implements RMI {
 
         saveToBinaryFile();
         return true;
-    
+
     }
 }
