@@ -30,7 +30,7 @@ public class VentanaPrincipal extends JFrame {
         this.setLocationRelativeTo(null);
         this.setSize(615, 480);
 
-        Panel.setBackground(Color.GRAY);
+        Panel.setBackground(Color.BLACK);
         final RMI serverConn = initRMI();
         Tree.setModel(serverConn.getTreeModel());
         DefaultTreeCellRenderer renderer = (DefaultTreeCellRenderer) Tree.getCellRenderer();
@@ -83,8 +83,11 @@ public class VentanaPrincipal extends JFrame {
                                 menu.add(MenuItemDirectory);
                                 JMenuItem menuItemDirectoryBorrar = new JMenuItem("Borrar Directorio");
                                 menu.add(menuItemDirectoryBorrar);
-
                                 menu.show(Tree, pathBounds.x, pathBounds.y + pathBounds.height);
+
+                                TreePath tpos = Tree.getSelectionPath();
+                                final DefaultMutableTreeNode parento = (DefaultMutableTreeNode) tpos.getLastPathComponent();
+
                                 MenuItemFile.addActionListener(
                                         new ActionListener() {
                                     @Override
@@ -109,9 +112,7 @@ public class VentanaPrincipal extends JFrame {
                                         }
                                     }
                                 });
-                                DefaultTreeModel modelo = (DefaultTreeModel) Tree.getModel();
-                                TreePath tpo = Tree.getSelectionPath();
-                                final DefaultMutableTreeNode parento = (DefaultMutableTreeNode) tpo.getLastPathComponent();
+
                                 //borrar dirrectorio 
                                 menuItemDirectoryBorrar.addActionListener(
                                         new ActionListener() {
@@ -161,10 +162,6 @@ public class VentanaPrincipal extends JFrame {
                             } else {
                                 JMenuItem MenuItemDelete = new JMenuItem("Borrar Archivo");
                                 menu.add(MenuItemDelete);
-                                JMenuItem MenuItemRead = new JMenuItem("Leer el Archivo");
-                                menu.add(MenuItemRead);
-                                JMenuItem MenuItemWrite = new JMenuItem("Escribir en Archivo");
-                                menu.add(MenuItemWrite);
 
                                 menu.show(Tree, pathBounds.x, pathBounds.y + pathBounds.height);
 

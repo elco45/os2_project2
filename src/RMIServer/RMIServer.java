@@ -241,6 +241,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI {
         DefaultMutableTreeNode real = (DefaultMutableTreeNode) papa.getParent();
         int option = toDel.getDataNode();
         String name = getPath(toDel);
+        System.out.println(option);
 
         entryNode FAGA = (entryNode) real.getUserObject();
         System.out.println("FAGA NAME:");
@@ -282,14 +283,11 @@ public class RMIServer extends UnicastRemoteObject implements RMI {
         DefaultMutableTreeNode papa = searchForDaddy(root, (entryNode) nodo.getUserObject());
 
         papa = searchForDaddy(root, (entryNode) papa.getUserObject());
-
         DefaultMutableTreeNode real = (DefaultMutableTreeNode) papa.getParent();
-
         int option = toDel.getDataNode();
-        System.out.println(option);
         String name = getPath(toDel);
+        System.out.println(option);
 
-        System.out.println(name);
         entryNode FAGA = (entryNode) real.getUserObject();
         System.out.println("FAGA NAME:");
         System.out.println(FAGA.getName());
@@ -299,19 +297,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI {
         archiveStructure.nodesWereRemoved(papa, new int[]{index}, null);
 
         saveToBinaryFile();
-        
-        for (int i = 0; i < listDataServer.size(); i++) {
-            System.out.println(listDataServer.get(i));
-        }
-       // return listDataServer.get(option).deleteDir(name);
         return true;
-        /*Enumeration<DefaultMutableTreeNode> e = real.children();
-
-        int index = real.getIndex(papa);
-        real.remove(papa);
-        archiveStructure.nodesWereRemoved(papa, new int[]{index}, null);
-
-        saveToBinaryFile();
-        return listDataServer.get(option - 1).deleteFile(name);*/
+    
     }
 }
