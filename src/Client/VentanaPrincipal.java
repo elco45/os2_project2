@@ -53,10 +53,14 @@ public class VentanaPrincipal extends JFrame {
 
                             if (!nodo.isDir()) {
                                 try {
+                                    // open archivo
                                     TextArea.setText(serverConn.streamFromServer(nodo));
+
                                 } catch (RemoteException ex) {
                                     Logger.getLogger(VentanaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
                                 }
+                            } else {
+                                System.out.println("no es archivo");
                             }
                         }
                     }
@@ -118,11 +122,10 @@ public class VentanaPrincipal extends JFrame {
 
                                         try {
                                             if (serverConn.deletedir(tpo)) {
-                                                // Tree.setModel(serverConn.getTreeModel());
-                                                // ((DefaultTreeModel) Tree.getModel()).reload();
+                                                Tree.setModel(serverConn.getTreeModel());
+                                                ((DefaultTreeModel) Tree.getModel()).reload();
                                                 System.out.println("se borro");
                                             } else {
-
                                                 System.out.println("No se pudo");
                                             }
                                         } catch (RemoteException ex) {
@@ -142,11 +145,6 @@ public class VentanaPrincipal extends JFrame {
                                             DefaultTreeModel model = (DefaultTreeModel) Tree.getModel();
                                             TreePath tp = Tree.getSelectionPath();
                                             String Dir = JOptionPane.showInputDialog("Ingrese el nombre del Directorio");
-                                            /*
-                                                     model.insertNodeInto(new DefaultMutableTreeNode(hijo), Parent, 0)
-                                                     model.insertNodeInto(new DefaultMutableTreeNode(Dir), (DefaultMutableTreeNode) tp.getLastPathComponent(), 0);
-                                                     model.reload();
-                                             */
 
                                             DefaultMutableTreeNode parent = (DefaultMutableTreeNode) tp.getLastPathComponent();
 
@@ -157,8 +155,6 @@ public class VentanaPrincipal extends JFrame {
 
                                                 System.out.println("No se pudo");
                                             }
-
-                                            //addDirectory(insertNode, "texto");
                                         } catch (Exception ex) {
                                             Logger.getLogger(VentanaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
                                         }

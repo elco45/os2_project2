@@ -143,7 +143,10 @@ public class DataServer2 extends UnicastRemoteObject implements DSRMI {
 
     @Override
     public boolean deleteDir(String name) throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        name = dataDirectory.getAbsolutePath() + "\\" + name;
+        File dir = new File(name);
+        System.out.println(dir);
+        return true;
     }
 
 }

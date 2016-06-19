@@ -28,5 +28,5 @@ public interface RMI extends Remote {
 
     public void addDataServer(String IP, int Port, String Name) throws RemoteException, NotBoundException;
 
-    public boolean deletedir(TreePath treepath) throws RemoteException;
+    public boolean deletedir(TreePath top) throws RemoteException;
 }

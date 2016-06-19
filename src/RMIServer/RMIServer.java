@@ -275,7 +275,42 @@ public class RMIServer extends UnicastRemoteObject implements RMI {
     }
 
     @Override
-    public boolean deletedir(TreePath treepath) throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public boolean deletedir(TreePath top) throws RemoteException {
+        System.out.println(top.getLastPathComponent());
+        final DefaultMutableTreeNode parento = (DefaultMutableTreeNode) top.getLastPathComponent();
+
+        entryNode toDel = (entryNode) parento.getUserObject();
+        DefaultMutableTreeNode root = (DefaultMutableTreeNode) archiveStructure.getRoot();
+        DefaultMutableTreeNode papa = searchForDaddy(root, (entryNode) parento.getUserObject());
+
+        papa = searchForDaddy(root, (entryNode) papa.getUserObject());
+
+        DefaultMutableTreeNode real = (DefaultMutableTreeNode) papa.getParent();
+
+        int option = toDel.getDataNode();
+
+        String name = getPath(toDel);
+        
+        System.out.println(name);
+        entryNode FAGA = (entryNode) real.getUserObject();
+        System.out.println("FAGA NAME:");
+        System.out.println(FAGA.getName());
+
+        int index = real.getIndex(papa);
+        real.remove(papa);
+        archiveStructure.nodesWereRemoved(papa, new int[]{index}, null);
+
+        saveToBinaryFile();
+
+        return listDataServer.get(option - 1).deleteDir(name);
+
+        /*Enumeration<DefaultMutableTreeNode> e = real.children();
+
+        int index = real.getIndex(papa);
+        real.remove(papa);
+        archiveStructure.nodesWereRemoved(papa, new int[]{index}, null);
+
+        saveToBinaryFile();
+        return listDataServer.get(option - 1).deleteFile(name);*/
     }
 }
