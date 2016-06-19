@@ -7,7 +7,6 @@ package DataServer;
 
 import RMIServer.DSRMI;
 import RMIServer.RMI;
-import RMIServer.RMIServer;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -60,7 +59,7 @@ public class DataServer2 extends UnicastRemoteObject implements DSRMI {
     public static void main(String args[]) {
         //loadBinaryFile();
         try {
-            dataDirectory = new File("./Data/DataServer2/DFS");
+            dataDirectory = new File("./Data/DataServer2");
             if (!dataDirectory.exists()) {
                 try {
                     System.out.println("No Existe");

@@ -16,7 +16,7 @@ public class entryNode implements Serializable {
 
     //Constructor para el root
     public entryNode() {
-        this.name = "/ROOT/DFS/";
+        this.name = "/ROOT/";
         this.father = null;
         this.DataNode = -1;
         this.isDir = true;
