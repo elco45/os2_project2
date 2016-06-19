@@ -161,6 +161,10 @@ public class VentanaPrincipal extends JFrame {
                             } else {
                                 JMenuItem MenuItemDelete = new JMenuItem("Borrar Archivo");
                                 menu.add(MenuItemDelete);
+                                JMenuItem MenuItemRead = new JMenuItem("Leer el Archivo");
+                                menu.add(MenuItemRead);
+                                JMenuItem MenuItemWrite = new JMenuItem("Escribir en Archivo");
+                                menu.add(MenuItemWrite);
 
                                 menu.show(Tree, pathBounds.x, pathBounds.y + pathBounds.height);
 
