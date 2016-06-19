@@ -19,6 +19,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
@@ -35,6 +36,11 @@ public class Client extends javax.swing.JFrame {
 
     public Client() throws RemoteException, NotBoundException {
         initComponents();
+        
+        DefaultTreeCellRenderer renderer = (DefaultTreeCellRenderer) fileTree.getCellRenderer();
+        MyRenderer newRender = new MyRenderer(renderer.getDefaultClosedIcon(), renderer.getDefaultLeafIcon());
+        fileTree.setCellRenderer(newRender);
+        
         Registry reg = LocateRegistry.getRegistry("127.0.0.1", 1101);
         Server = (RMI) reg.lookup("server");
         System.out.println("Client connection to the server was successful");
