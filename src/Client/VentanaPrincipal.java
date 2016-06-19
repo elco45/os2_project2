@@ -109,19 +109,17 @@ public class VentanaPrincipal extends JFrame {
                                         }
                                     }
                                 });
-
+                                DefaultTreeModel modelo = (DefaultTreeModel) Tree.getModel();
+                                TreePath tpo = Tree.getSelectionPath();
+                                final DefaultMutableTreeNode parento = (DefaultMutableTreeNode) tpo.getLastPathComponent();
                                 //borrar dirrectorio 
                                 menuItemDirectoryBorrar.addActionListener(
                                         new ActionListener() {
                                     @Override
                                     public void actionPerformed(ActionEvent Event) {
-                                        System.out.println("Borrar Dir");
-                                        DefaultTreeModel model = (DefaultTreeModel) Tree.getModel();
-                                        TreePath tpo = Tree.getSelectionPath();
-                                        System.out.println(tpo);
 
                                         try {
-                                            if (serverConn.deletedir(tpo)) {
+                                            if (serverConn.deletedir(parento)) {
                                                 Tree.setModel(serverConn.getTreeModel());
                                                 ((DefaultTreeModel) Tree.getModel()).reload();
                                                 System.out.println("se borro");
