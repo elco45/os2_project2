@@ -9,6 +9,7 @@ import java.rmi.RemoteException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
@@ -24,12 +25,29 @@ public class FileDialog extends javax.swing.JFrame {
      */
     boolean editMode = false;
     DefaultMutableTreeNode parent = null;
-    
+    private JTree tree = null;
+    private entryNode editNode = null;
+
     public FileDialog(boolean edit, DefaultMutableTreeNode parent) {
         initComponents();
         editMode = edit;
         this.parent = parent;
+        setDefaultCloseOperation(javax.swing.WindowConstants.HIDE_ON_CLOSE);
         if (editMode) {
+            fileName.setEditable(false);
+        }
+    }
+
+    public FileDialog(boolean edit, entryNode editNode, DefaultMutableTreeNode parent, JTree tree) throws RemoteException {
+        initComponents();
+        editMode = edit;
+        this.parent = parent;
+        this.tree = tree;
+        setDefaultCloseOperation(javax.swing.WindowConstants.HIDE_ON_CLOSE);
+        if (editMode) {
+            this.editNode = editNode;
+            fileName.setText(editNode.getName());
+            fileContent.setText(Client.Server.streamFromServer(editNode));
             fileName.setEditable(false);
         }
     }
@@ -56,8 +74,6 @@ public class FileDialog extends javax.swing.JFrame {
         fileContent.setColumns(20);
         fileContent.setRows(5);
         jScrollPane1.setViewportView(fileContent);
-
-        fileName.setText("jTextField1");
 
         jButton1.setText("Save");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -108,6 +124,20 @@ public class FileDialog extends javax.swing.JFrame {
                     System.out.println("No se pudo");
                 }
                 this.setVisible(false);
+                tree.setModel(Client.Server.getTreeModel());
+                ((DefaultTreeModel) tree.getModel()).reload();
+            } catch (RemoteException ex) {
+                Logger.getLogger(FileDialog.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else {
+            String Text = fileContent.getText();
+            try {
+                if (!Client.Server.editFile(fileName.getText(), editNode, Text)) {
+                    System.out.println("No se pudo");
+                }
+                this.setVisible(false);
+                tree.setModel(Client.Server.getTreeModel());
+                ((DefaultTreeModel) tree.getModel()).reload();
             } catch (RemoteException ex) {
                 Logger.getLogger(FileDialog.class.getName()).log(Level.SEVERE, null, ex);
             }

@@ -236,6 +236,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI {
     @Override
     public boolean deleteFile(DefaultMutableTreeNode nodo) throws RemoteException {
         entryNode toDel = (entryNode) nodo.getUserObject();
+        String path = getPath(toDel);
         DefaultMutableTreeNode root = (DefaultMutableTreeNode) archiveStructure.getRoot();
         DefaultMutableTreeNode papa = searchForDaddy(root, (entryNode) nodo.getUserObject());
 
@@ -243,18 +244,16 @@ public class RMIServer extends UnicastRemoteObject implements RMI {
         DefaultMutableTreeNode real = (DefaultMutableTreeNode) papa.getParent();
         int option = toDel.getDataNode();
         String name = getPath(toDel);
-        System.out.println(option);
-
         entryNode FAGA = (entryNode) real.getUserObject();
-        System.out.println("FAGA NAME:");
-        System.out.println(FAGA.getName());
-        Enumeration<DefaultMutableTreeNode> e = real.children();
-
         int index = real.getIndex(papa);
         real.remove(papa);
         archiveStructure.nodesWereRemoved(papa, new int[]{index}, null);
 
         saveToBinaryFile();
+
+        for (DSRMI tmp : listDataServer) {
+            tmp.deleteDir(path);
+        }
         return listDataServer.get(option - 1).deleteFile(name);
 
     }
@@ -306,5 +305,19 @@ public class RMIServer extends UnicastRemoteObject implements RMI {
         }
         return true;
 
+    }
+
+    @Override
+    public boolean editFile(String Name, entryNode nodo, String Text) throws RemoteException {
+        String Path = getPath(nodo);
+        System.out.println("Soy un path");
+        System.out.println(Path);
+        saveToBinaryFile();
+
+        //MAGIA DE DATACENTERS PARAMS = TEXT,PATH
+        if (!listDataServer.get(nodo.getDataNode() - 1).editFile(Text, Path)) {
+            System.out.println("No se pudo crear el archivo");
+        }
+        return true;
     }
 }

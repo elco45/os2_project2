@@ -132,7 +132,10 @@ public class DataServer1 extends UnicastRemoteObject implements DSRMI {
     public boolean deleteFile(String name) throws RemoteException {
         name = dataDirectory.getAbsolutePath() + "\\" + name;
         File file = new File(name);
-        return file.delete();
+        if (file.exists()) {
+            return file.delete();
+        }
+        return true;
     }
 
     @Override
@@ -175,6 +178,38 @@ public class DataServer1 extends UnicastRemoteObject implements DSRMI {
                 //Logger.getLogger(DataServer2.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+        return true;
+    }
+
+    @Override
+    public boolean editFile(String content, String name) throws RemoteException {
+        PrintWriter writer = null;
+        String[] path = name.split("/");
+        name = dataDirectory.getAbsolutePath() + "\\";
+        for (int i = 1; i < path.length; i++) {
+            name += path[i];
+            if (name.endsWith(".txt")) {
+                try {
+                    writer = new PrintWriter(name, "UTF-8");
+                } catch (FileNotFoundException | UnsupportedEncodingException ex) {
+                    Logger.getLogger(DataServer1.class.getName()).log(Level.SEVERE, null, ex);
+                    return false;
+                }
+                writer.println(content);
+                writer.close();
+            } else {
+                File newFile = new File(name);
+                name += "\\";
+                if (!newFile.exists()) {
+                    newFile.mkdir();
+                }
+            }
+        }
+
+        System.out.println("Nombre del Archivo: " + name);
+        /*
+        
+         */
         return true;
     }
 }

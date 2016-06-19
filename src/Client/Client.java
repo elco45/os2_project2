@@ -6,18 +6,29 @@
 package Client;
 
 import RMIServer.RMI;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.DefaultListModel;
+import javax.swing.Icon;
+import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
+import javax.swing.UIDefaults;
+import javax.swing.UIManager;
+import javax.swing.filechooser.FileSystemView;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
@@ -36,11 +47,11 @@ public class Client extends javax.swing.JFrame {
 
     public Client() throws RemoteException, NotBoundException {
         initComponents();
-        
+
         DefaultTreeCellRenderer renderer = (DefaultTreeCellRenderer) fileTree.getCellRenderer();
         MyRenderer newRender = new MyRenderer(renderer.getDefaultClosedIcon(), renderer.getDefaultLeafIcon());
         fileTree.setCellRenderer(newRender);
-        
+
         Registry reg = LocateRegistry.getRegistry("127.0.0.1", 1101);
         Server = (RMI) reg.lookup("server");
         System.out.println("Client connection to the server was successful");
@@ -53,15 +64,13 @@ public class Client extends javax.swing.JFrame {
                 DefaultTreeModel model = (DefaultTreeModel) fileTree.getModel();
                 TreePath tp = fileTree.getSelectionPath();
                 DefaultMutableTreeNode parent = (DefaultMutableTreeNode) tp.getLastPathComponent();
-                FileDialog dialog = new FileDialog(false, parent);
-                dialog.setVisible(true);
+                FileDialog dialog = null;
                 try {
-                    fileTree.setModel(Server.getTreeModel());
-                    ((DefaultTreeModel) fileTree.getModel()).reload();
+                    dialog = new FileDialog(false, (entryNode) parent.getUserObject(), parent, fileTree);
                 } catch (RemoteException ex) {
                     Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                ((DefaultTreeModel) fileTree.getModel()).reload();
+                dialog.setVisible(true);
             }
         });
 
@@ -85,7 +94,7 @@ public class Client extends javax.swing.JFrame {
                     }
                     ((DefaultTreeModel) fileTree.getModel()).reload();
                 } catch (Exception ex) {
-                    Logger.getLogger(VentanaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+
                 }
             }
         });
@@ -106,12 +115,52 @@ public class Client extends javax.swing.JFrame {
                         System.out.println("No se pudo");
                     }
                 } catch (RemoteException ex) {
-                    Logger.getLogger(VentanaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+
                 }
 
             }
         }
         );
+
+        JMenuItem editFile = new JMenuItem("Editar archivo");
+        jPopupMenu2.add(editFile);
+        editFile.addActionListener(
+                new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent Event) {
+                TreePath tp = fileTree.getSelectionPath();
+                DefaultMutableTreeNode parent = (DefaultMutableTreeNode) tp.getLastPathComponent();
+                FileDialog dialog = null;
+                try {
+                    dialog = new FileDialog(true, (entryNode) parent.getUserObject(), parent, fileTree);
+                } catch (RemoteException ex) {
+                    Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                dialog.setVisible(true);
+            }
+        });
+        JMenuItem deleteFile = new JMenuItem("Borrar archivo");
+        jPopupMenu2.add(deleteFile);
+        deleteFile.addActionListener(
+                new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent Event) {
+                TreePath tp = fileTree.getSelectionPath();
+                DefaultMutableTreeNode parent = (DefaultMutableTreeNode) tp.getLastPathComponent();
+                try {
+                    Server.deleteFile(parent);
+                    fileTree.setModel(Server.getTreeModel());
+                    ((DefaultTreeModel) fileTree.getModel()).reload();
+                } catch (RemoteException ex) {
+                    Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        );
+
+        FileListCellRenderer rendererCell = new FileListCellRenderer();
+        jList1.setModel(new DefaultListModel());
+        jList1.setCellRenderer(rendererCell);
     }
 
     /**
@@ -125,6 +174,7 @@ public class Client extends javax.swing.JFrame {
 
         jPanel1 = new javax.swing.JPanel();
         jPopupMenu1 = new javax.swing.JPopupMenu();
+        jPopupMenu2 = new javax.swing.JPopupMenu();
         jScrollPane1 = new javax.swing.JScrollPane();
         fileTree = new javax.swing.JTree();
         jScrollPane2 = new javax.swing.JScrollPane();
@@ -191,12 +241,16 @@ public class Client extends javax.swing.JFrame {
             DefaultMutableTreeNode parent = (DefaultMutableTreeNode) tp.getLastPathComponent();
             entryNode nodo = (entryNode) parent.getUserObject();
             if (!nodo.isDir()) {
-                try {
-                    System.out.println(Server.streamFromServer(nodo));
-                } catch (RemoteException ex) {
-                    Logger.getLogger(VentanaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                DefaultListModel tmp = new DefaultListModel();
+                DefaultMutableTreeNode tmpNode = new DefaultMutableTreeNode("Not a directory!");
+                tmp.add(0, tmpNode);
+                jList1.setModel(tmp);
             } else {
+                DefaultListModel tmp = new DefaultListModel();
+                for (int i = 0; i < fileTree.getModel().getChildCount(parent); i++) {
+                    tmp.add(i, fileTree.getModel().getChild(parent, i));
+                }
+                jList1.setModel(tmp);
                 System.out.println("no es archivo");
             }
         }
@@ -213,6 +267,8 @@ public class Client extends javax.swing.JFrame {
                 entryNode nodo = (entryNode) parent.getUserObject();
                 if (nodo.isDir()) {
                     jPopupMenu1.show(fileTree, pathBounds.x, pathBounds.y + pathBounds.height);
+                } else {
+                    jPopupMenu2.show(fileTree, pathBounds.x, pathBounds.y + pathBounds.height);
                 }
             }
 
@@ -266,7 +322,66 @@ public class Client extends javax.swing.JFrame {
     private javax.swing.JList<String> jList1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPopupMenu jPopupMenu1;
+    private javax.swing.JPopupMenu jPopupMenu2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     // End of variables declaration//GEN-END:variables
+}
+
+class FileListCellRenderer extends DefaultListCellRenderer {
+
+    private static final long serialVersionUID = -7799441088157759804L;
+    private FileSystemView fileSystemView;
+    private JLabel label;
+    private Color textSelectionColor = Color.BLACK;
+    private Color backgroundSelectionColor = Color.CYAN;
+    private Color textNonSelectionColor = Color.BLACK;
+    private Color backgroundNonSelectionColor = Color.WHITE;
+
+    FileListCellRenderer() {
+        label = new JLabel();
+        label.setOpaque(true);
+        fileSystemView = FileSystemView.getFileSystemView();
+    }
+
+    @Override
+    public Component getListCellRendererComponent(
+            JList list,
+            Object value,
+            int index,
+            boolean selected,
+            boolean expanded) {
+
+        DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
+        UIDefaults defaults = UIManager.getDefaults();
+        Icon fileIcon = defaults.getIcon("FileView.fileIcon");
+        Icon folderIcon = defaults.getIcon("FileView.directoryIcon");
+        Icon computerIcon = defaults.getIcon("FileView.computerIcon");
+        if (node.getUserObject() instanceof String) {
+            label.setIcon(computerIcon);
+            label.setText((String) node.getUserObject());
+            return label;
+        }
+        entryNode file = (entryNode) node.getUserObject();
+
+        if (file.isDir()) {
+            label.setIcon(folderIcon);
+            File tmp = new File("./src");
+            //label.setIcon(fileSystemView.getSystemIcon( ));
+        } else {
+            label.setIcon(fileIcon);
+        };
+        label.setText(file.getName());
+        //label.setToolTipText(file.getPath());
+
+        if (selected) {
+            label.setBackground(backgroundSelectionColor);
+            label.setForeground(textSelectionColor);
+        } else {
+            label.setBackground(backgroundNonSelectionColor);
+            label.setForeground(textNonSelectionColor);
+        }
+
+        return label;
+    }
 }

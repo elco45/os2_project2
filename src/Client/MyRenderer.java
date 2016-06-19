@@ -28,6 +28,10 @@ public class MyRenderer extends DefaultTreeCellRenderer {
         super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row,
                 hasFocus);
         DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
+        if (node.getUserObject() instanceof String){
+            setIcon(Folder);
+            return this;
+        }
         entryNode nodeInfo = (entryNode) (node.getUserObject());
 
         if (nodeInfo.isDir()) {
