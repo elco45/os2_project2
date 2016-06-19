@@ -5,7 +5,6 @@
  */
 package DataServer;
 
-import RMIServer.DSRMI;
 import RMIServer.RMI;
 import java.io.BufferedReader;
 import java.io.File;
@@ -156,11 +155,29 @@ public class DataServer2 extends UnicastRemoteObject implements DSRMI {
         return collectedInfo;
     }
 
+    private void delete(File f) throws IOException {
+        if (f.isDirectory()) {
+            for (File c : f.listFiles()) {
+                delete(c);
+            }
+        }
+        if (!f.delete()) {
+            throw new FileNotFoundException("Failed to delete file: " + f);
+        }
+    }
+
     @Override
     public boolean deleteDir(String name) throws RemoteException {
         name = dataDirectory.getAbsolutePath() + "\\" + name;
         File dir = new File(name);
-        System.out.println(dir);
+        if (dir.exists()){
+            try {
+                delete(dir);
+            } catch (IOException ex) {
+                return false;
+                //Logger.getLogger(DataServer2.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
         return true;
     }
 

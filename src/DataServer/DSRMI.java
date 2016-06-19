@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package RMIServer;
+package DataServer;
 
 import java.io.File;
 import java.rmi.Remote;

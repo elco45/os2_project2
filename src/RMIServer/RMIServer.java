@@ -1,5 +1,6 @@
 package RMIServer;
 
+import DataServer.DSRMI;
 import Client.entryNode;
 import java.io.EOFException;
 import java.io.File;
@@ -263,7 +264,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI {
         String name = getPath(node);
         System.out.println(node.getDataNode());
         String retrievedFile = "";
-        
+
         retrievedFile = listDataServer.get(node.getDataNode() - 1).getFileContent(name);
         return retrievedFile;
     }
@@ -280,6 +281,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI {
     public boolean deletedir(DefaultMutableTreeNode nodo) throws RemoteException {
 
         entryNode toDel = (entryNode) nodo.getUserObject();
+        String path = getPath(toDel);
         DefaultMutableTreeNode root = (DefaultMutableTreeNode) archiveStructure.getRoot();
         DefaultMutableTreeNode papa = searchForDaddy(root, (entryNode) nodo.getUserObject());
 
@@ -298,6 +300,10 @@ public class RMIServer extends UnicastRemoteObject implements RMI {
         archiveStructure.nodesWereRemoved(papa, new int[]{index}, null);
 
         saveToBinaryFile();
+
+        for (DSRMI tmp : listDataServer) {
+            tmp.deleteDir(path);
+        }
         return true;
 
     }

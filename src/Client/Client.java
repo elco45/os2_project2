@@ -51,6 +51,7 @@ public class Client extends javax.swing.JFrame {
                 dialog.setVisible(true);
                 try {
                     fileTree.setModel(Server.getTreeModel());
+                    ((DefaultTreeModel) fileTree.getModel()).reload();
                 } catch (RemoteException ex) {
                     Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -76,6 +77,7 @@ public class Client extends javax.swing.JFrame {
                     } else {
                         System.out.println("No se pudo");
                     }
+                    ((DefaultTreeModel) fileTree.getModel()).reload();
                 } catch (Exception ex) {
                     Logger.getLogger(VentanaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
                 }
