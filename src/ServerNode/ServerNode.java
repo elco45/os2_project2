@@ -1,4 +1,4 @@
-package RMIServer;
+package ServerNode;
 
 import DataServer.DSRMI;
 import Client.entryNode;
@@ -22,11 +22,11 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
-public class RMIServer extends UnicastRemoteObject implements RMI {
+public class ServerNode extends UnicastRemoteObject implements RMI {
 
     private static HashMap<String, Integer> connections = new HashMap();
 
-    public RMIServer() throws RemoteException {
+    public ServerNode() throws RemoteException {
         super();
     }
 
@@ -62,7 +62,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI {
             // connections.put("DataServer3", (1104));
 
             Registry reg = LocateRegistry.createRegistry(connections.get("Server"));
-            reg.rebind("server", new RMIServer());
+            reg.rebind("server", new ServerNode());
             System.out.println("Server started..");
             loadBinaryFile();
 

@@ -5,7 +5,7 @@
  */
 package DataServer;
 
-import RMIServer.RMI;
+import ServerNode.RMI;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;

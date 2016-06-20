@@ -1,4 +1,4 @@
-package RMIServer;
+package ServerNode;
 
 import Client.entryNode;
 import java.rmi.NotBoundException;
