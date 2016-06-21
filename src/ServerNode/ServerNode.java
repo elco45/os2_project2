@@ -189,12 +189,15 @@ public class ServerNode extends UnicastRemoteObject implements RMI {
         System.out.println(Path);
         archiveStructure.insertNodeInto(new DefaultMutableTreeNode(hijo), daddy, 0);
         saveToBinaryFile();
-        if (!listDataServer.get(roundRobin - 1).createFile(Text, Path)) {
-            System.out.println("No se pudo crear el archivo");
-        }
+        try {
+            if (!listDataServer.get(roundRobin - 1).createFile(Text, Path)) {
+                System.out.println("No se pudo crear el archivo");
+            }
 
-        if (!listDataServerReplica.get(roundRobin - 1).createFile(Text, Path)) {
-            System.out.println("No se pudo crear el archivo");
+            if (!listDataServerReplica.get(roundRobin - 1).createFile(Text, Path)) {
+                System.out.println("No se pudo crear el archivo");
+            }
+        } catch (Exception e) {
         }
         nextDataServer();
         return true;
@@ -227,12 +230,14 @@ public class ServerNode extends UnicastRemoteObject implements RMI {
         archiveStructure.nodesWereRemoved(papa, new int[]{index}, null);
 
         saveToBinaryFile();
-
-        for (DSRMI tmp : listDataServer) {
-            tmp.deleteDir(path);
-        }
-        for (DSRMI tmps : listDataServerReplica) {
-            tmps.deleteDir(path);
+        try {
+            for (DSRMI tmp : listDataServer) {
+                tmp.deleteDir(path);
+            }
+            for (DSRMI tmps : listDataServerReplica) {
+                tmps.deleteDir(path);
+            }
+        } catch (Exception e) {
         }
         return listDataServer.get(option - 1).deleteFile(name) && listDataServerReplica.get(option - 1).deleteFile(name);
 
@@ -252,20 +257,13 @@ public class ServerNode extends UnicastRemoteObject implements RMI {
     @Override
     public void addDataServer(String IP, int Port, String Name) throws RemoteException, NotBoundException {
         Registry reg1 = LocateRegistry.getRegistry(IP, Port);
-        if (Port == 1102) {
+        if (isReplica(Port)) {
+            listDataServerReplica.add((DSRMI) reg1.lookup(Name));
+            System.out.println("Connected to " + Name);
+        } else {
             listDataServer.add((DSRMI) reg1.lookup(Name));
             System.out.println("Connected to " + Name);
             dataServerConnected++;
-        } else if (Port == 1103) {
-            listDataServer.add((DSRMI) reg1.lookup(Name));
-            System.out.println("Connected to " + Name);
-            dataServerConnected++;
-        } else if (Port == 1104) {
-            listDataServerReplica.add((DSRMI) reg1.lookup(Name));
-            System.out.println("Connected to " + Name);
-        } else if (Port == 1105) {
-            listDataServerReplica.add((DSRMI) reg1.lookup(Name));
-            System.out.println("Connected to " + Name);
         }
     }
 
@@ -295,6 +293,14 @@ public class ServerNode extends UnicastRemoteObject implements RMI {
         }
         return true;
 
+    }
+
+    public boolean isReplica(int Port) {
+        if (Port == 1104 || Port == 1105) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override

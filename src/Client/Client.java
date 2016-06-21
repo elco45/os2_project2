@@ -73,7 +73,7 @@ public class Client extends javax.swing.JFrame {
                 dialog.setVisible(true);
             }
         });
-
+      
         JMenuItem MenuItemDirectory = new JMenuItem("Crear Directorio");
         jPopupMenu1.add(MenuItemDirectory);
         MenuItemDirectory.addActionListener(
@@ -98,6 +98,7 @@ public class Client extends javax.swing.JFrame {
                 }
             }
         });
+        System.out.println(fileTree.getSelectionPath());
         JMenuItem menuItemDirectoryBorrar = new JMenuItem("Borrar Directorio");
         jPopupMenu1.add(menuItemDirectoryBorrar);
         menuItemDirectoryBorrar.addActionListener(
@@ -107,7 +108,7 @@ public class Client extends javax.swing.JFrame {
                 try {
                     TreePath tpos = fileTree.getSelectionPath();
                     DefaultMutableTreeNode parento = (DefaultMutableTreeNode) tpos.getLastPathComponent();
-                    if (Server.deletedir(parento)&& !parento.isRoot()) {
+                    if (Server.deletedir(parento) && !parento.isRoot()) {
                         fileTree.setModel(Server.getTreeModel());
                         ((DefaultTreeModel) fileTree.getModel()).reload();
                         System.out.println("se borro");
