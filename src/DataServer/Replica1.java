@@ -22,14 +22,13 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class DataServer2 extends UnicastRemoteObject implements DSRMI {
+public class Replica1 extends UnicastRemoteObject implements DSRMI {
 
     private static File dataDirectory;
     private static ArrayList<Integer> clients = new ArrayList();
-    ;
     private static Registry reg;
 
-    public DataServer2(File dataDirectory2) throws RemoteException {
+    public Replica1(File dataDirectory2) throws RemoteException {
         super();
         dataDirectory = dataDirectory2;
     }
@@ -56,9 +55,8 @@ public class DataServer2 extends UnicastRemoteObject implements DSRMI {
     }
 
     public static void main(String args[]) {
-        //loadBinaryFile();
         try {
-            dataDirectory = new File("./Data/DataServer2/");
+            dataDirectory = new File("./Data/Replica1/");
             if (!dataDirectory.exists()) {
                 try {
                     System.out.println("No Existe");
@@ -73,16 +71,15 @@ public class DataServer2 extends UnicastRemoteObject implements DSRMI {
             } else {
                 System.out.println("Existe!");
             }
-
             Registry reg1 = LocateRegistry.getRegistry("127.0.0.1", 1101);
             RMI server = (RMI) reg1.lookup("server");
             System.out.println("Found Server");
 
-            reg = LocateRegistry.createRegistry(1103);
-            reg.rebind("DataServer2", new DataServer1(dataDirectory));
-            System.out.println("DataServer2 started..");
+            reg = LocateRegistry.createRegistry(1102);
+            reg.rebind("Replica1", new Replica1(dataDirectory));
+            System.out.println("Replica1 started..");
 
-            server.addDataServer("127.0.0.1", 1103, "DataServer2");
+            server.addDataServer("127.0.0.1", 1102, "Replica1");
         } catch (RemoteException | NotBoundException e) {
             System.out.println(e);
         }
@@ -110,7 +107,7 @@ public class DataServer2 extends UnicastRemoteObject implements DSRMI {
                 try {
                     writer = new PrintWriter(name, "UTF-8");
                 } catch (FileNotFoundException | UnsupportedEncodingException ex) {
-                    Logger.getLogger(DataServer1.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(Replica1.class.getName()).log(Level.SEVERE, null, ex);
                     return false;
                 }
                 writer.println(content);
@@ -125,6 +122,9 @@ public class DataServer2 extends UnicastRemoteObject implements DSRMI {
         }
 
         System.out.println("Nombre del Archivo: " + name);
+        /*
+        
+         */
         return true;
     }
 
@@ -192,7 +192,7 @@ public class DataServer2 extends UnicastRemoteObject implements DSRMI {
                 try {
                     writer = new PrintWriter(name, "UTF-8");
                 } catch (FileNotFoundException | UnsupportedEncodingException ex) {
-                    Logger.getLogger(DataServer1.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(Replica1.class.getName()).log(Level.SEVERE, null, ex);
                     return false;
                 }
                 writer.println(content);

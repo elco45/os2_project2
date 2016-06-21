@@ -122,9 +122,6 @@ public class DataServer1 extends UnicastRemoteObject implements DSRMI {
         }
 
         System.out.println("Nombre del Archivo: " + name);
-        /*
-        
-         */
         return true;
     }
 
@@ -175,7 +172,6 @@ public class DataServer1 extends UnicastRemoteObject implements DSRMI {
                 delete(dir);
             } catch (IOException ex) {
                 return false;
-                //Logger.getLogger(DataServer2.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         return true;

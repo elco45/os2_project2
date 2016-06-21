@@ -52,14 +52,12 @@ public class ServerNode extends UnicastRemoteObject implements RMI {
     public static List<DSRMI> listDataServer = new LinkedList<>();
 
     public static void main(String args[]) {
-
-        //loadBinaryFile();
         try {
-
             connections.put("Server", (1101));
             connections.put("DataServer1", (1102));
             connections.put("DataServer2", (1103));
-            // connections.put("DataServer3", (1104));
+            connections.put("Replica1", (1104));
+            connections.put("Replica2", (1105));
 
             Registry reg = LocateRegistry.createRegistry(connections.get("Server"));
             reg.rebind("server", new ServerNode());
@@ -75,17 +73,12 @@ public class ServerNode extends UnicastRemoteObject implements RMI {
         File file = null;
         try {
             file = new File("./archiveStructure.bin");
-            //If file does not exist, it creates a new archiveStructure
-            //which is the structure of the file in the system
             if (!file.exists()) {
                 entryNode rootNode = new entryNode();
                 DefaultMutableTreeNode root = new DefaultMutableTreeNode(rootNode);
                 archiveStructure = new DefaultTreeModel(root);
                 System.out.println("Lo cree");
             } else {
-
-                //If file exists, it reads the file and cast
-                //that file in order to load it in archiveStructure
                 FileInputStream entry = new FileInputStream(file);
                 try (ObjectInputStream object = new ObjectInputStream(entry)) {
                     archiveStructure = (DefaultTreeModel) object.readObject();
@@ -93,8 +86,6 @@ public class ServerNode extends UnicastRemoteObject implements RMI {
                 } catch (EOFException ex) {
 
                 } finally {
-//Always close the FileInputStream and the ObjectInputStream
-                    //to avoid errors
                     entry.close();
                 }
             }
@@ -105,9 +96,6 @@ public class ServerNode extends UnicastRemoteObject implements RMI {
     private static void saveToBinaryFile() {
         File file = null;
         try {
-            //Save the archiveStructure into a binaryFile
-            //this method should be executed before the program
-            //finishes its execution
             file = new File("./archiveStructure.bin");
             try (FileOutputStream exit = new FileOutputStream(file)) {
                 ObjectOutputStream object = new ObjectOutputStream(exit);
@@ -135,8 +123,6 @@ public class ServerNode extends UnicastRemoteObject implements RMI {
         entryNode NodoPadre = (entryNode) Parent.getUserObject();
 
         DefaultMutableTreeNode root = (DefaultMutableTreeNode) archiveStructure.getRoot();
-        Enumeration children = root.children();
-        entryNode actual = (entryNode) root.getUserObject();
         DefaultMutableTreeNode daddy = searchForDaddy(root, NodoPadre);
 
         archiveStructure.insertNodeInto(new DefaultMutableTreeNode(hijo), daddy, 0);
@@ -144,19 +130,9 @@ public class ServerNode extends UnicastRemoteObject implements RMI {
         return true;
     }
 
-    private static String getTreeText(DefaultTreeModel model, Object object, String indent) {
-        String myRow = indent + object + "\n";
-        for (int i = 0; i < model.getChildCount(object); i++) {
-            myRow += getTreeText(model, model.getChild(object, i), indent + "  ");
-        }
-        return myRow;
-    }
 
     private DefaultMutableTreeNode searchForDaddy(DefaultMutableTreeNode Iam, entryNode NodoPadre) {
-
-        Enumeration children = Iam.children();
         entryNode actual;
-        DefaultMutableTreeNode daddy;
         DefaultMutableTreeNode siguiente = null;
         Enumeration<DefaultMutableTreeNode> e = Iam.depthFirstEnumeration();
 
@@ -203,8 +179,6 @@ public class ServerNode extends UnicastRemoteObject implements RMI {
         entryNode NodoPadre = (entryNode) Parent.getUserObject();
 
         DefaultMutableTreeNode root = (DefaultMutableTreeNode) archiveStructure.getRoot();
-        Enumeration children = root.children();
-        entryNode actual = (entryNode) root.getUserObject();
         DefaultMutableTreeNode daddy = searchForDaddy(root, NodoPadre);
 
         String Path = getPath(hijo);
@@ -213,7 +187,6 @@ public class ServerNode extends UnicastRemoteObject implements RMI {
         archiveStructure.insertNodeInto(new DefaultMutableTreeNode(hijo), daddy, 0);
         saveToBinaryFile();
 
-        //MAGIA DE DATACENTERS PARAMS = TEXT,PATH
         if (!listDataServer.get(roundRobin - 1).createFile(Text, Path)) {
             System.out.println("No se pudo crear el archivo");
         }
@@ -244,7 +217,6 @@ public class ServerNode extends UnicastRemoteObject implements RMI {
         DefaultMutableTreeNode real = (DefaultMutableTreeNode) papa.getParent();
         int option = toDel.getDataNode();
         String name = getPath(toDel);
-        entryNode FAGA = (entryNode) real.getUserObject();
         int index = real.getIndex(papa);
         real.remove(papa);
         archiveStructure.nodesWereRemoved(papa, new int[]{index}, null);
@@ -287,12 +259,9 @@ public class ServerNode extends UnicastRemoteObject implements RMI {
         papa = searchForDaddy(root, (entryNode) papa.getUserObject());
         DefaultMutableTreeNode real = (DefaultMutableTreeNode) papa.getParent();
         int option = toDel.getDataNode();
-        String name = getPath(toDel);
         System.out.println(option);
 
         entryNode FAGA = (entryNode) real.getUserObject();
-        System.out.println("FAGA NAME:");
-        System.out.println(FAGA.getName());
 
         int index = real.getIndex(papa);
         real.remove(papa);
@@ -314,7 +283,6 @@ public class ServerNode extends UnicastRemoteObject implements RMI {
         System.out.println(Path);
         saveToBinaryFile();
 
-        //MAGIA DE DATACENTERS PARAMS = TEXT,PATH
         if (!listDataServer.get(nodo.getDataNode() - 1).editFile(Text, Path)) {
             System.out.println("No se pudo crear el archivo");
         }

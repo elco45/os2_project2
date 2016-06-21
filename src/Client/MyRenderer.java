@@ -28,7 +28,7 @@ public class MyRenderer extends DefaultTreeCellRenderer {
         super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row,
                 hasFocus);
         DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
-        if (node.getUserObject() instanceof String){
+        if (node.getUserObject() instanceof String) {
             setIcon(Folder);
             return this;
         }
