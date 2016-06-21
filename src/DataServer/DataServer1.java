@@ -80,6 +80,7 @@ public class DataServer1 extends UnicastRemoteObject implements DSRMI {
             System.out.println("DataServer1 started..");
 
             server.addDataServer("127.0.0.1", 1102, "DataServer1");
+
         } catch (RemoteException | NotBoundException e) {
             System.out.println(e);
         }
@@ -98,8 +99,10 @@ public class DataServer1 extends UnicastRemoteObject implements DSRMI {
 
     @Override
     public boolean createFile(String content, String name) throws RemoteException {
+
         PrintWriter writer = null;
         String[] path = name.split("/");
+
         name = dataDirectory.getAbsolutePath() + "\\";
         for (int i = 1; i < path.length; i++) {
             name += path[i];
@@ -120,7 +123,6 @@ public class DataServer1 extends UnicastRemoteObject implements DSRMI {
                 }
             }
         }
-
         System.out.println("Nombre del Archivo: " + name);
         return true;
     }

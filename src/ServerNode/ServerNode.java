@@ -9,6 +9,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.rmi.AccessException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -18,6 +19,8 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
@@ -50,6 +53,7 @@ public class ServerNode extends UnicastRemoteObject implements RMI {
     private static int dataServerConnected = 0;
     static int roundRobin = 1;
     public static List<DSRMI> listDataServer = new LinkedList<>();
+    public static List<DSRMI> listDataServerReplica = new LinkedList<>();
 
     public static void main(String args[]) {
         try {
@@ -130,7 +134,6 @@ public class ServerNode extends UnicastRemoteObject implements RMI {
         return true;
     }
 
-
     private DefaultMutableTreeNode searchForDaddy(DefaultMutableTreeNode Iam, entryNode NodoPadre) {
         entryNode actual;
         DefaultMutableTreeNode siguiente = null;
@@ -186,11 +189,9 @@ public class ServerNode extends UnicastRemoteObject implements RMI {
         System.out.println(Path);
         archiveStructure.insertNodeInto(new DefaultMutableTreeNode(hijo), daddy, 0);
         saveToBinaryFile();
-
-        if (!listDataServer.get(roundRobin - 1).createFile(Text, Path)) {
+        if (!listDataServer.get(roundRobin - 1).createFile(Text, Path) && !listDataServerReplica.get(roundRobin - 1).createFile(Text, Path)) {
             System.out.println("No se pudo crear el archivo");
         }
-
         nextDataServer();
         return true;
     }
@@ -226,7 +227,10 @@ public class ServerNode extends UnicastRemoteObject implements RMI {
         for (DSRMI tmp : listDataServer) {
             tmp.deleteDir(path);
         }
-        return listDataServer.get(option - 1).deleteFile(name);
+        for (DSRMI tmps : listDataServerReplica) {
+            tmps.deleteDir(path);
+        }
+        return listDataServer.get(option - 1).deleteFile(name) && listDataServerReplica.get(option - 1).deleteFile(name);
 
     }
 
@@ -237,15 +241,28 @@ public class ServerNode extends UnicastRemoteObject implements RMI {
         String retrievedFile = "";
 
         retrievedFile = listDataServer.get(node.getDataNode() - 1).getFileContent(name);
+
         return retrievedFile;
     }
 
     @Override
     public void addDataServer(String IP, int Port, String Name) throws RemoteException, NotBoundException {
         Registry reg1 = LocateRegistry.getRegistry(IP, Port);
-        listDataServer.add((DSRMI) reg1.lookup(Name));
-        System.out.println("Connected to " + Name);
-        dataServerConnected++;
+        if (Port == 1102) {
+            listDataServer.add((DSRMI) reg1.lookup(Name));
+            System.out.println("Connected to " + Name);
+            dataServerConnected++;
+        } else if (Port == 1103) {
+            listDataServer.add((DSRMI) reg1.lookup(Name));
+            System.out.println("Connected to " + Name);
+            dataServerConnected++;
+        } else if (Port == 1104) {
+            listDataServerReplica.add((DSRMI) reg1.lookup(Name));
+            System.out.println("Connected to " + Name);
+        } else if (Port == 1105) {
+            listDataServerReplica.add((DSRMI) reg1.lookup(Name));
+            System.out.println("Connected to " + Name);
+        }
     }
 
     @Override

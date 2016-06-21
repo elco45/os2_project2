@@ -78,84 +78,84 @@ public class Client extends javax.swing.JFrame {
         jPopupMenu1.add(MenuItemDirectory);
         MenuItemDirectory.addActionListener(
                 new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent Event) {
-                        try {
-                            System.out.println("Directorio");
-                            DefaultTreeModel model = (DefaultTreeModel) fileTree.getModel();
-                            TreePath tp = fileTree.getSelectionPath();
-                            String Dir = JOptionPane.showInputDialog("Ingrese el nombre del directorio");
-                            DefaultMutableTreeNode parent = (DefaultMutableTreeNode) tp.getLastPathComponent();
-                            if (Server.addDirectory(parent, Dir)) {
-                                fileTree.setModel(Server.getTreeModel());
-                                ((DefaultTreeModel) fileTree.getModel()).reload();
-                            } else {
-                                System.out.println("No se pudo");
-                            }
-                            ((DefaultTreeModel) fileTree.getModel()).reload();
-                        } catch (Exception ex) {
-
-                        }
+            @Override
+            public void actionPerformed(ActionEvent Event) {
+                try {
+                    System.out.println("Directorio");
+                    DefaultTreeModel model = (DefaultTreeModel) fileTree.getModel();
+                    TreePath tp = fileTree.getSelectionPath();
+                    String Dir = JOptionPane.showInputDialog("Ingrese el nombre del directorio");
+                    DefaultMutableTreeNode parent = (DefaultMutableTreeNode) tp.getLastPathComponent();
+                    if (Server.addDirectory(parent, Dir)) {
+                        fileTree.setModel(Server.getTreeModel());
+                        ((DefaultTreeModel) fileTree.getModel()).reload();
+                    } else {
+                        System.out.println("No se pudo");
                     }
-                });
+                    ((DefaultTreeModel) fileTree.getModel()).reload();
+                } catch (Exception ex) {
+
+                }
+            }
+        });
         JMenuItem menuItemDirectoryBorrar = new JMenuItem("Borrar Directorio");
         jPopupMenu1.add(menuItemDirectoryBorrar);
         menuItemDirectoryBorrar.addActionListener(
                 new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent Event) {
-                        try {
-                            TreePath tpos = fileTree.getSelectionPath();
-                            DefaultMutableTreeNode parento = (DefaultMutableTreeNode) tpos.getLastPathComponent();
-                            if (Server.deletedir(parento)) {
-                                fileTree.setModel(Server.getTreeModel());
-                                ((DefaultTreeModel) fileTree.getModel()).reload();
-                                System.out.println("se borro");
-                            } else {
-                                System.out.println("No se pudo");
-                            }
-                        } catch (RemoteException ex) {
-
-                        }
-
+            @Override
+            public void actionPerformed(ActionEvent Event) {
+                try {
+                    TreePath tpos = fileTree.getSelectionPath();
+                    DefaultMutableTreeNode parento = (DefaultMutableTreeNode) tpos.getLastPathComponent();
+                    if (Server.deletedir(parento)) {
+                        fileTree.setModel(Server.getTreeModel());
+                        ((DefaultTreeModel) fileTree.getModel()).reload();
+                        System.out.println("se borro");
+                    } else {
+                        System.out.println("No se pudo");
                     }
+                } catch (RemoteException ex) {
+
                 }
+
+            }
+        }
         );
 
         JMenuItem editFile = new JMenuItem("Editar archivo");
         jPopupMenu2.add(editFile);
         editFile.addActionListener(
                 new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent Event) {
-                        TreePath tp = fileTree.getSelectionPath();
-                        DefaultMutableTreeNode parent = (DefaultMutableTreeNode) tp.getLastPathComponent();
-                        FileDialog dialog = null;
-                        try {
-                            dialog = new FileDialog(true, (entryNode) parent.getUserObject(), parent, fileTree);
-                        } catch (RemoteException ex) {
-                            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                        dialog.setVisible(true);
-                    }
-                });
+            @Override
+            public void actionPerformed(ActionEvent Event) {
+                TreePath tp = fileTree.getSelectionPath();
+                DefaultMutableTreeNode parent = (DefaultMutableTreeNode) tp.getLastPathComponent();
+                FileDialog dialog = null;
+                try {
+                    dialog = new FileDialog(true, (entryNode) parent.getUserObject(), parent, fileTree);
+                } catch (RemoteException ex) {
+                    Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                dialog.setVisible(true);
+            }
+        });
         JMenuItem deleteFile = new JMenuItem("Borrar archivo");
         jPopupMenu2.add(deleteFile);
         deleteFile.addActionListener(
                 new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent Event) {
-                        TreePath tp = fileTree.getSelectionPath();
-                        DefaultMutableTreeNode parent = (DefaultMutableTreeNode) tp.getLastPathComponent();
-                        try {
-                            Server.deleteFile(parent);
-                            fileTree.setModel(Server.getTreeModel());
-                            ((DefaultTreeModel) fileTree.getModel()).reload();
-                        } catch (RemoteException ex) {
-                            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                    }
+            @Override
+            public void actionPerformed(ActionEvent Event) {
+                TreePath tp = fileTree.getSelectionPath();
+                DefaultMutableTreeNode parent = (DefaultMutableTreeNode) tp.getLastPathComponent();
+                try {
+                    Server.deleteFile(parent);
+                    fileTree.setModel(Server.getTreeModel());
+                    ((DefaultTreeModel) fileTree.getModel()).reload();
+                } catch (RemoteException ex) {
+                    Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
                 }
+            }
+        }
         );
 
         FileListCellRenderer rendererCell = new FileListCellRenderer();
@@ -310,6 +310,7 @@ public class Client extends javax.swing.JFrame {
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 try {
                     new Client().setVisible(true);

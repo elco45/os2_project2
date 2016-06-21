@@ -75,11 +75,11 @@ public class Replica2 extends UnicastRemoteObject implements DSRMI {
             RMI server = (RMI) reg1.lookup("server");
             System.out.println("Found Server");
 
-            reg = LocateRegistry.createRegistry(1102);
+            reg = LocateRegistry.createRegistry(1105);
             reg.rebind("Replica2", new Replica2(dataDirectory));
             System.out.println("Replica2 started..");
 
-            server.addDataServer("127.0.0.1", 1102, "Replica2");
+            server.addDataServer("127.0.0.1", 1105, "Replica2");
         } catch (RemoteException | NotBoundException e) {
             System.out.println(e);
         }

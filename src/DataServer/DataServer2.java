@@ -192,7 +192,7 @@ public class DataServer2 extends UnicastRemoteObject implements DSRMI {
                 try {
                     writer = new PrintWriter(name, "UTF-8");
                 } catch (FileNotFoundException | UnsupportedEncodingException ex) {
-                    Logger.getLogger(DataServer1.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(DataServer1.class.getName()).log(Level.SEVERE, null, ex);
                     return false;
                 }
                 writer.println(content);
