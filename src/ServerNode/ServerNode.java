@@ -189,7 +189,11 @@ public class ServerNode extends UnicastRemoteObject implements RMI {
         System.out.println(Path);
         archiveStructure.insertNodeInto(new DefaultMutableTreeNode(hijo), daddy, 0);
         saveToBinaryFile();
-        if (!listDataServer.get(roundRobin - 1).createFile(Text, Path) && !listDataServerReplica.get(roundRobin - 1).createFile(Text, Path)) {
+        if (!listDataServer.get(roundRobin - 1).createFile(Text, Path)) {
+            System.out.println("No se pudo crear el archivo");
+        }
+
+        if (!listDataServerReplica.get(roundRobin - 1).createFile(Text, Path)) {
             System.out.println("No se pudo crear el archivo");
         }
         nextDataServer();
