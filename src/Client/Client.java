@@ -107,15 +107,15 @@ public class Client extends javax.swing.JFrame {
                 try {
                     TreePath tpos = fileTree.getSelectionPath();
                     DefaultMutableTreeNode parento = (DefaultMutableTreeNode) tpos.getLastPathComponent();
-                    if (Server.deletedir(parento)) {
+                    if (Server.deletedir(parento)&& !parento.isRoot()) {
                         fileTree.setModel(Server.getTreeModel());
                         ((DefaultTreeModel) fileTree.getModel()).reload();
                         System.out.println("se borro");
                     } else {
                         System.out.println("No se pudo");
                     }
-                } catch (RemoteException ex) {
-
+                } catch (Exception ex) {
+                    System.out.println("No se pudo");
                 }
 
             }
